@@ -3,8 +3,7 @@ Demo project for Spring-AOP
 
 
 ## What is AOP?
-Aspect Oriented Programming addresses the problem of cross-cutting concerns which would be any kind of code that is repeated in your application
-the application and cannot normally be completely refactored into its own module, like logging, error handling, and transaction. 
+Aspect Oriented Programming addresses the problem of cross-cutting concerns which would be any kind of code that is repeated in your application and cannot normally be completely refactored into its own module, like logging, error handling, and transaction. 
 
 ### AOP Terminology
 * Aspect: The class that contains advice and pointcut. (ex. ControllerAspect and ServiceAspect are the aspects.)
