@@ -39,8 +39,8 @@ public class ControllerAspect {
 
         try {
             result = (ResultBean<?>) proceedingJoinPoint.proceed();
-            logger.info(" time: " + (System.currentTimeMillis() - startTime));
-            logger.info("return value: " + result);
+            logger.info("TIME: " + (System.currentTimeMillis() - startTime));
+            logger.info("RESPONSE: " + result);
         } catch (Throwable e) {
             result = handlerException(proceedingJoinPoint, e);
         }
@@ -51,12 +51,12 @@ public class ControllerAspect {
     private ResultBean<?> handlerException(ProceedingJoinPoint proceedingJoinPoint, Throwable e) {
         ResultBean<?> result = new ResultBean<>();
 
-        logger.error(proceedingJoinPoint.getSignature() + " error", e);
+        logger.error(proceedingJoinPoint.getSignature() + " ERROR", e);
         if (e instanceof DemoException) {
             result.setMsg(e.getLocalizedMessage());
             result.setStatus(ResultBean.Status.ERROR);
         } else {
-            result.setMsg("Internal error");
+            result.setMsg("INTERNAL ERROR");
             result.setStatus(ResultBean.Status.ERROR);
             // you could also email exception info to yourself
         }

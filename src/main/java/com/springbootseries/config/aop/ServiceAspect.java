@@ -20,16 +20,16 @@ public class ServiceAspect {
     private static final Logger logger = LoggerFactory.getLogger(ServiceAspect.class);
 
     @Pointcut("execution(* com.springbootseries.service.*.*(..))")
-    public void logging() {}
+    public void loggingAspect() {}
 
-    @Before("logging()")
+    @Before("loggingAspect()")
     public void logParams(final JoinPoint joinPoint) throws Throwable {
         logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
         logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
     }
 
-    @AfterReturning(returning = "returnValue", pointcut = "logging()")
-    public void doAfterReturning(Object returnValue) throws Throwable {
+    @AfterReturning(returning = "returnValue", pointcut = "loggingAspect()")
+    public void logReturnValue(Object returnValue) throws Throwable {
         logger.info("RESPONSE : " + returnValue);
     }
 }
