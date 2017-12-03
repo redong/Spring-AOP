@@ -1,16 +1,15 @@
 package com.springbootseries.config.aop;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Created by rendong on 12/2/17.
@@ -18,26 +17,19 @@ import java.util.List;
 @Aspect
 @Component
 public class ServiceAspect {
-    private static final Logger logger = LoggerFactory.getLogger(ControllerAspect.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceAspect.class);
 
     @Pointcut("execution(* com.springbootseries.service.*.*(..))")
-    public void logging() {
+    public void logging() {}
 
+    @Before("logging()")
+    public void logParams(final JoinPoint joinPoint) throws Throwable {
+        logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+        logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
     }
 
-    @Around("logging()")
-    public Object logParams(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-
-        Signature signature = proceedingJoinPoint.getSignature();
-        Object[] args = proceedingJoinPoint.getArgs();
-        List<String> argsList = new ArrayList<>();
-
-        for (Object arg: args) {
-            argsList.add(arg.toString());
-        }
-
-        logger.info(signature + "\n" + " ( " + String.join(",", argsList) + " ) ");
-
-        return proceedingJoinPoint.proceed();
+    @AfterReturning(returning = "returnValue", pointcut = "logging()")
+    public void doAfterReturning(Object returnValue) throws Throwable {
+        logger.info("RESPONSE : " + returnValue);
     }
 }

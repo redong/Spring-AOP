@@ -8,6 +8,11 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 
 /**
  * Created by rendong on 12/2/17.
@@ -21,12 +26,21 @@ public class ControllerAspect {
     @Around("execution(public com.springbootseries.vo.ResultBean *(..))")
     public ResultBean loggingAspect(final ProceedingJoinPoint proceedingJoinPoint) {
         long startTime = System.currentTimeMillis();
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+
+        logger.info("URL : " + request.getRequestURL().toString());
+        logger.info("HTTP_METHOD : " + request.getMethod());
+        logger.info("IP : " + request.getRemoteAddr());
+        logger.info("CLASS_METHOD : " + proceedingJoinPoint.getSignature().getDeclaringTypeName() + "." + proceedingJoinPoint.getSignature().getName());
+        logger.info("ARGS : " + Arrays.toString(proceedingJoinPoint.getArgs()));
 
         ResultBean<?> result;
 
         try {
             result = (ResultBean<?>) proceedingJoinPoint.proceed();
-            logger.info(proceedingJoinPoint.getSignature() + " time: " + (System.currentTimeMillis() - startTime));
+            logger.info(" time: " + (System.currentTimeMillis() - startTime));
+            logger.info("return value: " + result);
         } catch (Throwable e) {
             result = handlerException(proceedingJoinPoint, e);
         }
@@ -37,14 +51,14 @@ public class ControllerAspect {
     private ResultBean<?> handlerException(ProceedingJoinPoint proceedingJoinPoint, Throwable e) {
         ResultBean<?> result = new ResultBean<>();
 
+        logger.error(proceedingJoinPoint.getSignature() + " error", e);
         if (e instanceof DemoException) {
             result.setMsg(e.getLocalizedMessage());
             result.setStatus(ResultBean.Status.ERROR);
         } else {
-            logger.error(proceedingJoinPoint.getSignature() + " error", e);
             result.setMsg("Internal error");
             result.setStatus(ResultBean.Status.ERROR);
-            // you also can email exception info to yourself
+            // you could also email exception info to yourself
         }
 
         return result;
